@@ -35,6 +35,7 @@
 #ifndef _EXFAT_NLS_H
 #define _EXFAT_NLS_H
 
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/nls.h>
 
@@ -44,6 +45,21 @@
 /*----------------------------------------------------------------------*/
 /*  Constant & Macro Definitions                                        */
 /*----------------------------------------------------------------------*/
+=======
+#include <linux/nls.h>
+
+#include "exfat_config.h"
+#include "exfat_global.h"
+#include "exfat_api.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+  /*----------------------------------------------------------------------*/
+	/*  Constant & Macro Definitions                                        */
+	/*----------------------------------------------------------------------*/
+>>>>>>> fc156d9... exFAT support
 
 #define NUM_UPCASE              2918
 
@@ -64,15 +80,26 @@
 
 /* DOS name stucture */
 typedef struct {
+<<<<<<< HEAD
 	u8       name[DOS_NAME_LENGTH];
 	u8       name_case;
+=======
+	UINT8       name[DOS_NAME_LENGTH];
+	UINT8       name_case;
+>>>>>>> fc156d9... exFAT support
 } DOS_NAME_T;
 
 /* unicode name stucture */
 typedef struct {
+<<<<<<< HEAD
 	u16      name[MAX_NAME_LENGTH];
 	u16      name_hash;
 	u8       name_len;
+=======
+	UINT16      name[MAX_NAME_LENGTH];
+	UINT16      name_hash;
+	UINT8       name_len;
+>>>>>>> fc156d9... exFAT support
 } UNI_NAME_T;
 
 /*----------------------------------------------------------------------*/
@@ -80,6 +107,7 @@ typedef struct {
 /*----------------------------------------------------------------------*/
 
 /* NLS management function */
+<<<<<<< HEAD
 u16 nls_upper(struct super_block *sb, u16 a);
 s32  nls_dosname_cmp(struct super_block *sb, u8 *a, u8 *b);
 s32  nls_uniname_cmp(struct super_block *sb, u16 *a, u16 *b);
@@ -89,3 +117,20 @@ void   nls_uniname_to_cstring(struct super_block *sb, u8 *p_cstring, UNI_NAME_T 
 void   nls_cstring_to_uniname(struct super_block *sb, UNI_NAME_T *p_uniname, u8 *p_cstring, s32 *p_lossy);
 
 #endif /* _EXFAT_NLS_H */
+=======
+UINT16 nls_upper(struct super_block *sb, UINT16 a);
+INT32  nls_dosname_cmp(struct super_block *sb, UINT8 *a, UINT8 *b);
+INT32  nls_uniname_cmp(struct super_block *sb, UINT16 *a, UINT16 *b);
+void   nls_uniname_to_dosname(struct super_block *sb, DOS_NAME_T *p_dosname, UNI_NAME_T *p_uniname, INT32 *p_lossy);
+void   nls_dosname_to_uniname(struct super_block *sb, UNI_NAME_T *p_uniname, DOS_NAME_T *p_dosname);
+void   nls_uniname_to_cstring(struct super_block *sb, UINT8 *p_cstring, UNI_NAME_T *p_uniname);
+void   nls_cstring_to_uniname(struct super_block *sb, UNI_NAME_T *p_uniname, UINT8 *p_cstring, INT32 *p_lossy);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* _EXFAT_NLS_H */
+
+/* end of exfat_nls.h */
+>>>>>>> fc156d9... exFAT support

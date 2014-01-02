@@ -46,6 +46,10 @@
 #include <linux/time.h>
 
 #include "exfat_config.h"
+<<<<<<< HEAD
+=======
+#include "exfat_global.h"
+>>>>>>> fc156d9... exFAT support
 #include "exfat_api.h"
 #include "exfat_oal.h"
 
@@ -55,6 +59,7 @@
 /*                                                                      */
 /*======================================================================*/
 
+<<<<<<< HEAD
 DEFINE_SEMAPHORE(z_sem);
 
 s32 sm_init(struct semaphore *sm)
@@ -64,6 +69,17 @@ s32 sm_init(struct semaphore *sm)
 } /* end of sm_init */
 
 s32 sm_P(struct semaphore *sm)
+=======
+DECLARE_MUTEX(z_sem);
+
+INT32 sm_init(struct semaphore *sm)
+{
+	sema_init(sm, 1);
+	return(0);
+} /* end of sm_init */
+
+INT32 sm_P(struct semaphore *sm)
+>>>>>>> fc156d9... exFAT support
 {
 	down(sm);
 	return 0;
@@ -114,7 +130,11 @@ extern struct timezone sys_tz;
 			leap_year = ((year + 3) / 4) - 1;       \
 		else                                            \
 			leap_year = ((year + 3) / 4);           \
+<<<<<<< HEAD
 	} while (0)
+=======
+	} while(0)
+>>>>>>> fc156d9... exFAT support
 
 /* Linear day numbers of the respective 1sts in non-leap years. */
 static time_t accum_days_in_year[] = {
@@ -138,7 +158,11 @@ TIMESTAMP_T *tm_current(TIMESTAMP_T *tp)
 		tp->day  = 1;
 		tp->mon  = 1;
 		tp->year = 0;
+<<<<<<< HEAD
 		return tp;
+=======
+		return(tp);
+>>>>>>> fc156d9... exFAT support
 	}
 #if BITS_PER_LONG == 64
 	if (second >= UNIX_SECS_2108) {
@@ -148,7 +172,11 @@ TIMESTAMP_T *tm_current(TIMESTAMP_T *tp)
 		tp->day  = 31;
 		tp->mon  = 12;
 		tp->year = 127;
+<<<<<<< HEAD
 		return tp;
+=======
+		return(tp);
+>>>>>>> fc156d9... exFAT support
 	}
 #endif
 
@@ -182,5 +210,12 @@ TIMESTAMP_T *tm_current(TIMESTAMP_T *tp)
 	tp->mon  = month;
 	tp->year = year;
 
+<<<<<<< HEAD
 	return tp;
 } /* end of tm_current */
+=======
+	return(tp);
+} /* end of tm_current */
+
+/* end of exfat_oal.c */
+>>>>>>> fc156d9... exFAT support

@@ -29,14 +29,25 @@
 #include <linux/swap.h>
 
 #include "exfat_config.h"
+<<<<<<< HEAD
+=======
+#include "exfat_global.h"
+>>>>>>> fc156d9... exFAT support
 #include "exfat_data.h"
 #include "exfat_oal.h"
 
 #include "exfat_blkdev.h"
 #include "exfat_cache.h"
+<<<<<<< HEAD
 #include "exfat_nls.h"
 #include "exfat_api.h"
 #include "exfat_core.h"
+=======
+#include "exfat_part.h"
+#include "exfat_nls.h"
+#include "exfat_api.h"
+#include "exfat.h"
+>>>>>>> fc156d9... exFAT support
 
 #define EXFAT_ERRORS_CONT  1    /* ignore error and continue */
 #define EXFAT_ERRORS_PANIC 2    /* panic on error */
@@ -60,9 +71,15 @@ struct exfat_mount_options {
 	char *iocharset;            /* charset for filename input/display */
 	unsigned char casesensitive;
 	unsigned char errors;       /* on error: continue, panic, remount-ro */
+<<<<<<< HEAD
 #ifdef CONFIG_EXFAT_DISCARD
 	unsigned char discard;      /* flag on if -o dicard specified and device support discard() */
 #endif /* CONFIG_EXFAT_DISCARD */
+=======
+#if EXFAT_CONFIG_DISCARD
+	unsigned char discard;      /* flag on if -o dicard specified and device support discard() */
+#endif /* EXFAT_CONFIG_DISCARD */
+>>>>>>> fc156d9... exFAT support
 };
 
 #define EXFAT_HASH_BITS    8
@@ -88,9 +105,15 @@ struct exfat_sb_info {
 
 	spinlock_t inode_hash_lock;
 	struct hlist_head inode_hashtable[EXFAT_HASH_SIZE];
+<<<<<<< HEAD
 #ifdef CONFIG_EXFAT_KERNEL_DEBUG
 	long debug_flags;
 #endif /* CONFIG_EXFAT_KERNEL_DEBUG */
+=======
+#if EXFAT_CONFIG_KERNEL_DEBUG
+	long debug_flags;
+#endif /* EXFAT_CONFIG_KERNEL_DEBUG */
+>>>>>>> fc156d9... exFAT support
 };
 
 /*
@@ -112,6 +135,7 @@ struct exfat_inode_info {
 
 #define EXFAT_SB(sb)		((struct exfat_sb_info *)((sb)->s_fs_info))
 
+<<<<<<< HEAD
 static inline struct exfat_inode_info *EXFAT_I(struct inode *inode)
 {
 	return container_of(inode, struct exfat_inode_info, vfs_inode);
@@ -122,6 +146,12 @@ static inline bool exfat_readonly(struct super_block *sb)
 	return sb->s_flags & MS_RDONLY;
 }
 
+=======
+static inline struct exfat_inode_info *EXFAT_I(struct inode *inode) {
+	return container_of(inode, struct exfat_inode_info, vfs_inode);
+}
+
+>>>>>>> fc156d9... exFAT support
 /*
  * If ->i_mode can't hold S_IWUGO (i.e. ATTR_RO), we use ->i_attrs to
  * save ATTR_RO instead of ->i_mode.
@@ -160,9 +190,15 @@ static inline mode_t exfat_make_mode(struct exfat_sb_info *sbi,
 static inline u32 exfat_make_attr(struct inode *inode)
 {
 	if (exfat_mode_can_hold_ro(inode) && !(inode->i_mode & S_IWUGO))
+<<<<<<< HEAD
 		return (EXFAT_I(inode)->fid.attr) | ATTR_READONLY;
 	else
 		return EXFAT_I(inode)->fid.attr;
+=======
+		return ((EXFAT_I(inode)->fid.attr) | ATTR_READONLY);
+	else
+		return (EXFAT_I(inode)->fid.attr);
+>>>>>>> fc156d9... exFAT support
 }
 
 static inline void exfat_save_attr(struct inode *inode, u32 attr)

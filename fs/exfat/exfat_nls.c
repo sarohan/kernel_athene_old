@@ -33,12 +33,20 @@
 /************************************************************************/
 
 #include "exfat_config.h"
+<<<<<<< HEAD
+=======
+#include "exfat_global.h"
+>>>>>>> fc156d9... exFAT support
 #include "exfat_data.h"
 
 #include "exfat_nls.h"
 #include "exfat_api.h"
 #include "exfat_super.h"
+<<<<<<< HEAD
 #include "exfat_core.h"
+=======
+#include "exfat.h"
+>>>>>>> fc156d9... exFAT support
 
 #include <linux/nls.h>
 
@@ -50,14 +58,23 @@
 /*  Local Variable Definitions                                          */
 /*----------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static u16 bad_dos_chars[] = {
 	/* + , ; = [ ] */
+=======
+static UINT16 bad_dos_chars[] = {
+  /* + , ; = [ ] */
+>>>>>>> fc156d9... exFAT support
 	0x002B, 0x002C, 0x003B, 0x003D, 0x005B, 0x005D,
 	0xFF0B, 0xFF0C, 0xFF1B, 0xFF1D, 0xFF3B, 0xFF3D,
 	0
 };
 
+<<<<<<< HEAD
 static u16 bad_uni_chars[] = {
+=======
+static UINT16 bad_uni_chars[] = {
+>>>>>>> fc156d9... exFAT support
 	/* " * / : < > ? \ | */
 	0x0022,         0x002A, 0x002F, 0x003A,
 	0x003C, 0x003E, 0x003F, 0x005C, 0x007C,
@@ -68,25 +85,39 @@ static u16 bad_uni_chars[] = {
 /*  Local Function Declarations                                         */
 /*----------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static s32  convert_uni_to_ch(struct nls_table *nls, u8 *ch, u16 uni, s32 *lossy);
 static s32  convert_ch_to_uni(struct nls_table *nls, u16 *uni, u8 *ch, s32 *lossy);
+=======
+static INT32  convert_uni_to_ch(struct nls_table *nls, UINT8 *ch, UINT16 uni, INT32 *lossy);
+static INT32  convert_ch_to_uni(struct nls_table *nls, UINT16 *uni, UINT8 *ch, INT32 *lossy);
+>>>>>>> fc156d9... exFAT support
 
 /*======================================================================*/
 /*  Global Function Definitions                                         */
 /*======================================================================*/
 
+<<<<<<< HEAD
 u16 nls_upper(struct super_block *sb, u16 a)
+=======
+UINT16 nls_upper(struct super_block *sb, UINT16 a)
+>>>>>>> fc156d9... exFAT support
 {
 	FS_INFO_T *p_fs = &(EXFAT_SB(sb)->fs_info);
 
 	if (EXFAT_SB(sb)->options.casesensitive)
+<<<<<<< HEAD
 		return a;
+=======
+		return(a);
+>>>>>>> fc156d9... exFAT support
 	if (p_fs->vol_utbl != NULL && (p_fs->vol_utbl)[get_col_index(a)] != NULL)
 		return (p_fs->vol_utbl)[get_col_index(a)][get_row_index(a)];
 	else
 		return a;
 }
 
+<<<<<<< HEAD
 u16 *nls_wstrchr(u16 *str, u16 wchar)
 {
 	while (*str) {
@@ -142,29 +173,85 @@ void nls_uniname_to_dosname(struct super_block *sb, DOS_NAME_T *p_dosname, UNI_N
 		p_dosname->name_case = 0x0;
 		if (p_lossy != NULL)
 			*p_lossy = FALSE;
+=======
+INT32 nls_dosname_cmp(struct super_block *sb, UINT8 *a, UINT8 *b)
+{
+	return(STRNCMP((void *) a, (void *) b, DOS_NAME_LENGTH));
+} /* end of nls_dosname_cmp */
+
+INT32 nls_uniname_cmp(struct super_block *sb, UINT16 *a, UINT16 *b)
+{
+	INT32 i;
+
+	for (i = 0; i < MAX_NAME_LENGTH; i++, a++, b++) {
+		if (nls_upper(sb, *a) != nls_upper(sb, *b)) return(1);
+		if (*a == 0x0) return(0);
+	}
+	return(0);
+} /* end of nls_uniname_cmp */
+
+void nls_uniname_to_dosname(struct super_block *sb, DOS_NAME_T *p_dosname, UNI_NAME_T *p_uniname, INT32 *p_lossy)
+{
+	INT32 i, j, len, lossy = FALSE;
+	UINT8 buf[MAX_CHARSET_SIZE];
+	UINT8 lower = 0, upper = 0;
+	UINT8 *dosname = p_dosname->name;
+	UINT16 *uniname = p_uniname->name;
+	UINT16 *p, *last_period;
+	struct nls_table *nls = EXFAT_SB(sb)->nls_disk;
+
+	for (i = 0; i < DOS_NAME_LENGTH; i++) {
+		*(dosname+i) = ' ';
+	}
+
+	if (!nls_uniname_cmp(sb, uniname, (UINT16 *) UNI_CUR_DIR_NAME)) {
+		*(dosname) = '.';
+		p_dosname->name_case = 0x0;
+		if (p_lossy != NULL) *p_lossy = FALSE;
+		return;
+	}
+
+	if (!nls_uniname_cmp(sb, uniname, (UINT16 *) UNI_PAR_DIR_NAME)) {
+		*(dosname) = '.';
+		*(dosname+1) = '.';
+		p_dosname->name_case = 0x0;
+		if (p_lossy != NULL) *p_lossy = FALSE;
+>>>>>>> fc156d9... exFAT support
 		return;
 	}
 
 	/* search for the last embedded period */
 	last_period = NULL;
 	for (p = uniname; *p; p++) {
+<<<<<<< HEAD
 		if (*p == (u16) '.')
 			last_period = p;
+=======
+		if (*p == (UINT16) '.') last_period = p;
+>>>>>>> fc156d9... exFAT support
 	}
 
 	i = 0;
 	while (i < DOS_NAME_LENGTH) {
 		if (i == 8) {
+<<<<<<< HEAD
 			if (last_period == NULL)
 				break;
 
 			if (uniname <= last_period) {
 				if (uniname < last_period)
 					lossy = TRUE;
+=======
+			if (last_period == NULL) break;
+
+			if (uniname <= last_period) {
+				if (uniname < last_period) lossy = TRUE;
+>>>>>>> fc156d9... exFAT support
 				uniname = last_period + 1;
 			}
 		}
 
+<<<<<<< HEAD
 		if (*uniname == (u16) '\0') {
 			break;
 		} else if (*uniname == (u16) ' ') {
@@ -175,6 +262,16 @@ void nls_uniname_to_dosname(struct super_block *sb, DOS_NAME_T *p_dosname, UNI_N
 			else
 				i = 8;
 		} else if (nls_wstrchr(bad_dos_chars, *uniname)) {
+=======
+		if (*uniname == (UINT16) '\0') {
+			break;
+		} else if (*uniname == (UINT16) ' ') {
+			lossy = TRUE;
+		} else if (*uniname == (UINT16) '.') {
+			if (uniname < last_period) lossy = TRUE;
+			else i = 8;
+		} else if (WSTRCHR(bad_dos_chars, *uniname)) {
+>>>>>>> fc156d9... exFAT support
 			lossy = TRUE;
 			*(dosname+i) = '_';
 			i++;
@@ -182,9 +279,15 @@ void nls_uniname_to_dosname(struct super_block *sb, DOS_NAME_T *p_dosname, UNI_N
 			len = convert_uni_to_ch(nls, buf, *uniname, &lossy);
 
 			if (len > 1) {
+<<<<<<< HEAD
 				if ((i >= 8) && ((i+len) > DOS_NAME_LENGTH))
 					break;
 
+=======
+				if ((i >= 8) && ((i+len) > DOS_NAME_LENGTH)) {
+					break;
+				}
+>>>>>>> fc156d9... exFAT support
 				if ((i <  8) && ((i+len) > 8)) {
 					i = 8;
 					continue;
@@ -192,12 +295,19 @@ void nls_uniname_to_dosname(struct super_block *sb, DOS_NAME_T *p_dosname, UNI_N
 
 				lower = 0xFF;
 
+<<<<<<< HEAD
 				for (j = 0; j < len; j++, i++)
 					*(dosname+i) = *(buf+j);
+=======
+				for (j = 0; j < len; j++, i++) {
+					*(dosname+i) = *(buf+j);
+				}
+>>>>>>> fc156d9... exFAT support
 			} else { /* len == 1 */
 				if ((*buf >= 'a') && (*buf <= 'z')) {
 					*(dosname+i) = *buf - ('a' - 'A');
 
+<<<<<<< HEAD
 					if (i < 8)
 						lower |= 0x08;
 					else
@@ -209,6 +319,15 @@ void nls_uniname_to_dosname(struct super_block *sb, DOS_NAME_T *p_dosname, UNI_N
 						upper |= 0x08;
 					else
 						upper |= 0x10;
+=======
+					if (i < 8) lower |= 0x08;
+					else lower |= 0x10;
+				} else if ((*buf >= 'A') && (*buf <= 'Z')) {
+					*(dosname+i) = *buf;
+
+					if (i < 8) upper |= 0x08;
+					else upper |= 0x10;
+>>>>>>> fc156d9... exFAT support
 				} else {
 					*(dosname+i) = *buf;
 				}
@@ -219,6 +338,7 @@ void nls_uniname_to_dosname(struct super_block *sb, DOS_NAME_T *p_dosname, UNI_N
 		uniname++;
 	}
 
+<<<<<<< HEAD
 	if (*dosname == 0xE5)
 		*dosname = 0x05;
 
@@ -232,14 +352,30 @@ void nls_uniname_to_dosname(struct super_block *sb, DOS_NAME_T *p_dosname, UNI_N
 
 	if (p_lossy != NULL)
 		*p_lossy = lossy;
+=======
+	if (*dosname == 0xE5) *dosname = 0x05;
+	if (*uniname != 0x0) lossy = TRUE;
+
+	if (upper & lower) p_dosname->name_case = 0xFF;
+	else p_dosname->name_case = lower;
+
+	if (p_lossy != NULL) *p_lossy = lossy;
+>>>>>>> fc156d9... exFAT support
 } /* end of nls_uniname_to_dosname */
 
 void nls_dosname_to_uniname(struct super_block *sb, UNI_NAME_T *p_uniname, DOS_NAME_T *p_dosname)
 {
+<<<<<<< HEAD
 	int i = 0, j, n = 0;
 	u8 buf[DOS_NAME_LENGTH+2];
 	u8 *dosname = p_dosname->name;
 	u16 *uniname = p_uniname->name;
+=======
+	INT32 i = 0, j, n = 0;
+	UINT8 buf[DOS_NAME_LENGTH+2];
+	UINT8 *dosname = p_dosname->name;
+	UINT16 *uniname = p_uniname->name;
+>>>>>>> fc156d9... exFAT support
 	struct nls_table *nls = EXFAT_SB(sb)->nls_disk;
 
 	if (*dosname == 0x05) {
@@ -248,9 +384,14 @@ void nls_dosname_to_uniname(struct super_block *sb, UNI_NAME_T *p_uniname, DOS_N
 		n++;
 	}
 
+<<<<<<< HEAD
 	for (; i < 8; i++, n++) {
 		if (*(dosname+i) == ' ')
 			break;
+=======
+	for ( ; i < 8; i++, n++) {
+		if (*(dosname+i) == ' ') break;
+>>>>>>> fc156d9... exFAT support
 
 		if ((*(dosname+i) >= 'A') && (*(dosname+i) <= 'Z') && (p_dosname->name_case & 0x08))
 			*(buf+n) = *(dosname+i) + ('a' - 'A');
@@ -263,8 +404,12 @@ void nls_dosname_to_uniname(struct super_block *sb, UNI_NAME_T *p_uniname, DOS_N
 	}
 
 	for (i = 8; i < DOS_NAME_LENGTH; i++, n++) {
+<<<<<<< HEAD
 		if (*(dosname+i) == ' ')
 			break;
+=======
+		if (*(dosname+i) == ' ') break;
+>>>>>>> fc156d9... exFAT support
 
 		if ((*(dosname+i) >= 'A') && (*(dosname+i) <= 'Z') && (p_dosname->name_case & 0x10))
 			*(buf+n) = *(dosname+i) + ('a' - 'A');
@@ -275,8 +420,12 @@ void nls_dosname_to_uniname(struct super_block *sb, UNI_NAME_T *p_uniname, DOS_N
 
 	i = j = 0;
 	while (j < (MAX_NAME_LENGTH-1)) {
+<<<<<<< HEAD
 		if (*(buf+i) == '\0')
 			break;
+=======
+		if (*(buf+i) == '\0') break;
+>>>>>>> fc156d9... exFAT support
 
 		i += convert_ch_to_uni(nls, uniname, (buf+i), NULL);
 
@@ -284,6 +433,7 @@ void nls_dosname_to_uniname(struct super_block *sb, UNI_NAME_T *p_uniname, DOS_N
 		j++;
 	}
 
+<<<<<<< HEAD
 	*uniname = (u16) '\0';
 } /* end of nls_dosname_to_uniname */
 
@@ -309,14 +459,35 @@ void nls_uniname_to_cstring(struct super_block *sb, u8 *p_cstring, UNI_NAME_T *p
 	while (i < (MAX_NAME_LENGTH-1)) {
 		if (*uniname == (u16) '\0')
 			break;
+=======
+	*uniname = (UINT16) '\0';
+} /* end of nls_dosname_to_uniname */
+
+void nls_uniname_to_cstring(struct super_block *sb, UINT8 *p_cstring, UNI_NAME_T *p_uniname)
+{
+	INT32 i, j, len;
+	UINT8 buf[MAX_CHARSET_SIZE];
+	UINT16 *uniname = p_uniname->name;
+	struct nls_table *nls = EXFAT_SB(sb)->nls_io;
+
+	i = 0;
+	while (i < (MAX_NAME_LENGTH-1)) {
+		if (*uniname == (UINT16) '\0') break;
+>>>>>>> fc156d9... exFAT support
 
 		len = convert_uni_to_ch(nls, buf, *uniname, NULL);
 
 		if (len > 1) {
 			for (j = 0; j < len; j++)
+<<<<<<< HEAD
 				*p_cstring++ = (char) *(buf+j);
 		} else { /* len == 1 */
 			*p_cstring++ = (char) *buf;
+=======
+				*p_cstring++ = (INT8) *(buf+j);
+		} else { /* len == 1 */
+			*p_cstring++ = (INT8) *buf;
+>>>>>>> fc156d9... exFAT support
 		}
 
 		uniname++;
@@ -326,16 +497,26 @@ void nls_uniname_to_cstring(struct super_block *sb, u8 *p_cstring, UNI_NAME_T *p
 	*p_cstring = '\0';
 } /* end of nls_uniname_to_cstring */
 
+<<<<<<< HEAD
 void nls_cstring_to_uniname(struct super_block *sb, UNI_NAME_T *p_uniname, u8 *p_cstring, s32 *p_lossy)
 {
 	int i, j, lossy = FALSE;
 	u8 *end_of_name;
 	u8 upname[MAX_NAME_LENGTH * 2];
 	u16 *uniname = p_uniname->name;
+=======
+void nls_cstring_to_uniname(struct super_block *sb, UNI_NAME_T *p_uniname, UINT8 *p_cstring, INT32 *p_lossy)
+{
+	INT32 i, j, lossy = FALSE;
+	UINT8 *end_of_name;
+	UINT8 upname[MAX_NAME_LENGTH * 2];
+	UINT16 *uniname = p_uniname->name;
+>>>>>>> fc156d9... exFAT support
 	struct nls_table *nls = EXFAT_SB(sb)->nls_io;
 
 
 	/* strip all trailing spaces */
+<<<<<<< HEAD
 	end_of_name = p_cstring + strlen((char *) p_cstring);
 
 	while (*(--end_of_name) == ' ') {
@@ -350,6 +531,20 @@ void nls_cstring_to_uniname(struct super_block *sb, UNI_NAME_T *p_uniname, u8 *p
 		while (*(--end_of_name) == '.') {
 			if (end_of_name < p_cstring)
 				break;
+=======
+	end_of_name = p_cstring + STRLEN((INT8 *) p_cstring);
+
+	while (*(--end_of_name) == ' ') {
+		if (end_of_name < p_cstring) break;
+	}
+	*(++end_of_name) = '\0';
+
+	if (STRCMP((INT8 *) p_cstring, ".") && STRCMP((INT8 *) p_cstring, "..")) {
+
+		/* strip all trailing periods */
+		while (*(--end_of_name) == '.') {
+			if (end_of_name < p_cstring) break;
+>>>>>>> fc156d9... exFAT support
 		}
 		*(++end_of_name) = '\0';
 	}
@@ -357,6 +552,7 @@ void nls_cstring_to_uniname(struct super_block *sb, UNI_NAME_T *p_uniname, u8 *p
 	if (*p_cstring == '\0')
 		lossy = TRUE;
 
+<<<<<<< HEAD
 	if (nls == NULL) {
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
 		i = utf8s_to_utf16s(p_cstring, MAX_NAME_LENGTH, uniname);
@@ -394,6 +590,27 @@ void nls_cstring_to_uniname(struct super_block *sb, UNI_NAME_T *p_uniname, u8 *p
 		*uniname = (u16) '\0';
 	}
 
+=======
+	i = j = 0;
+	while (j < (MAX_NAME_LENGTH-1)) {
+		if (*(p_cstring+i) == '\0') break;
+
+		i += convert_ch_to_uni(nls, uniname, (UINT8 *)(p_cstring+i), &lossy);
+
+		if ((*uniname < 0x0020) || WSTRCHR(bad_uni_chars, *uniname))
+			lossy = TRUE;
+
+		SET16_A(upname + j * 2, nls_upper(sb, *uniname));
+
+		uniname++;
+		j++;
+	}
+
+	if (*(p_cstring+i) != '\0')
+		lossy = TRUE;
+	*uniname = (UINT16) '\0';
+
+>>>>>>> fc156d9... exFAT support
 	p_uniname->name_len = j;
 	p_uniname->name_hash = calc_checksum_2byte((void *) upname, j<<1, 0, CS_DEFAULT);
 
@@ -405,13 +622,18 @@ void nls_cstring_to_uniname(struct super_block *sb, UNI_NAME_T *p_uniname, u8 *p
 /*  Local Function Definitions                                          */
 /*======================================================================*/
 
+<<<<<<< HEAD
 static s32 convert_ch_to_uni(struct nls_table *nls, u16 *uni, u8 *ch, s32 *lossy)
+=======
+static INT32 convert_ch_to_uni(struct nls_table *nls, UINT16 *uni, UINT8 *ch, INT32 *lossy)
+>>>>>>> fc156d9... exFAT support
 {
 	int len;
 
 	*uni = 0x0;
 
 	if (ch[0] < 0x80) {
+<<<<<<< HEAD
 		*uni = (u16) ch[0];
 		return 1;
 	}
@@ -433,12 +655,33 @@ static s32 convert_ch_to_uni(struct nls_table *nls, u16 *uni, u8 *ch, s32 *lossy
 } /* end of convert_ch_to_uni */
 
 static s32 convert_uni_to_ch(struct nls_table *nls, u8 *ch, u16 uni, s32 *lossy)
+=======
+		*uni = (UINT16) ch[0];
+		return(1);
+	}
+
+	if ((len = nls->char2uni(ch, NLS_MAX_CHARSET_SIZE, uni)) < 0) {
+		/* conversion failed */
+		printk("%s: fail to use nls \n", __func__);
+		if (lossy != NULL)
+			*lossy = TRUE;
+		*uni = (UINT16) '_';
+		if (!strcmp(nls->charset, "utf8")) return(1);
+		else return(2);
+	}
+
+	return(len);
+} /* end of convert_ch_to_uni */
+
+static INT32 convert_uni_to_ch(struct nls_table *nls, UINT8 *ch, UINT16 uni, INT32 *lossy)
+>>>>>>> fc156d9... exFAT support
 {
 	int len;
 
 	ch[0] = 0x0;
 
 	if (uni < 0x0080) {
+<<<<<<< HEAD
 		ch[0] = (u8) uni;
 		return 1;
 	}
@@ -456,3 +699,22 @@ static s32 convert_uni_to_ch(struct nls_table *nls, u8 *ch, u16 uni, s32 *lossy)
 	return len;
 
 } /* end of convert_uni_to_ch */
+=======
+		ch[0] = (UINT8) uni;
+		return(1);
+	}
+
+	if ((len = nls->uni2char(uni, ch, NLS_MAX_CHARSET_SIZE)) < 0) {
+		/* conversion failed */
+		printk("%s: fail to use nls \n", __func__);
+		if (lossy != NULL) *lossy = TRUE;
+		ch[0] = '_';
+		return(1);
+	}
+
+	return(len);
+
+} /* end of convert_uni_to_ch */
+
+/* end of exfat_nls.c */
+>>>>>>> fc156d9... exFAT support

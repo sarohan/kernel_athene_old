@@ -33,6 +33,10 @@
 /************************************************************************/
 
 #include "exfat_config.h"
+<<<<<<< HEAD
+=======
+#include "exfat_global.h"
+>>>>>>> fc156d9... exFAT support
 #include "exfat_data.h"
 #include "exfat_oal.h"
 
@@ -40,7 +44,11 @@
 #include "exfat_cache.h"
 #include "exfat_nls.h"
 #include "exfat_super.h"
+<<<<<<< HEAD
 #include "exfat_core.h"
+=======
+#include "exfat.h"
+>>>>>>> fc156d9... exFAT support
 
 /*======================================================================*/
 /*                                                                      */
@@ -52,18 +60,39 @@
 /*  File Manager                                                        */
 /*----------------------------------------------------------------------*/
 
+<<<<<<< HEAD
+=======
+/* file system volume table */
+FS_STRUCT_T fs_struct[MAX_DRIVE];
+
+#if 0
+>>>>>>> fc156d9... exFAT support
 /*----------------------------------------------------------------------*/
 /*  Buffer Manager                                                      */
 /*----------------------------------------------------------------------*/
 
 /* FAT cache */
+<<<<<<< HEAD
 DEFINE_SEMAPHORE(f_sem);
+=======
+DECLARE_MUTEX(f_sem);
+>>>>>>> fc156d9... exFAT support
 BUF_CACHE_T FAT_cache_array[FAT_CACHE_SIZE];
 BUF_CACHE_T FAT_cache_lru_list;
 BUF_CACHE_T FAT_cache_hash_list[FAT_CACHE_HASH_SIZE];
 
 /* buf cache */
+<<<<<<< HEAD
 DEFINE_SEMAPHORE(b_sem);
 BUF_CACHE_T buf_cache_array[BUF_CACHE_SIZE];
 BUF_CACHE_T buf_cache_lru_list;
 BUF_CACHE_T buf_cache_hash_list[BUF_CACHE_HASH_SIZE];
+=======
+DECLARE_MUTEX(b_sem);
+BUF_CACHE_T buf_cache_array[BUF_CACHE_SIZE];
+BUF_CACHE_T buf_cache_lru_list;
+BUF_CACHE_T buf_cache_hash_list[BUF_CACHE_HASH_SIZE];
+#endif
+
+/* end of exfat_data.c */
+>>>>>>> fc156d9... exFAT support
