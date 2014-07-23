@@ -169,4 +169,9 @@ obj-$(CONFIG_ESOC)		+= esoc/
 
 obj-$(CONFIG_BIF)		+= bif/
 obj-$(CONFIG_SENSORS)		+= sensors/
+<<<<<<< HEAD
 obj-$(CONFIG_SENSORS_SSC)	+= sensors/
+=======
+
+obj-$(CONFIG_CPUQUIET_FRAMEWORK)		+= cpuquiet/
+>>>>>>> c985934f15d... [1/2] find7: cpuquiet: initial bringup
