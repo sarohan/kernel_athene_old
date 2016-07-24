@@ -25,6 +25,9 @@ struct homebutton_data {
 	.vib_strength = VIB_STRENGTH,
 	.enable = true,
 	.key = KEY_HOME
+} hb_data = {
+	.vib_strength = VIB_STRENGTH,
+	.enable = true
 };
 
 static void hb_input_callback(struct work_struct *unused) {
@@ -35,6 +38,7 @@ static void hb_input_callback(struct work_struct *unused) {
 		set_vibrate(hb_data.vib_strength);
 
 	input_report_key(hb_data.hb_dev, hb_data.key, hb_data.key_down);
+	input_event(hb_data.hb_dev, EV_KEY, KEY_HOME, hb_data.key_down);
 	input_sync(hb_data.hb_dev);
 
 	mutex_unlock(&hb_lock);
@@ -284,6 +288,7 @@ static int __init hb_init(void)
 	rc = sysfs_create_file(hb_data.homebutton_kobj, &dev_attr_key.attr);
 	if (rc)
 		pr_err("%s: sysfs_create_file failed for homebutton key\n", __func__);
+		pr_err("%s: sysfs_create_file failed for homebutton vib_strength\n", __func__);		
 
 err_input_dev:
 	input_free_device(hb_data.hb_dev);
