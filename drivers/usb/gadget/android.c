@@ -3064,15 +3064,12 @@ static struct android_usb_function *supported_functions[] = {
 	&audio_source_function,
 #endif
 	&uasp_function,
-<<<<<<< HEAD
 	&charger_function,
 #ifdef CONFIG_SND_RAWMIDI
 	&midi_function,
 #endif
 	&usbnet_function,
-=======
 	&hid_function,
->>>>>>> 34329e4... Use Android device as USB keyboard/mouse patch taken from https://github.com/pelya/android-keyboard-gadget app required: https://play.google.com/store/apps/details?id=remote.hid.keyboard.client
 	NULL
 };
 
