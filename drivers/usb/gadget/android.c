@@ -73,9 +73,6 @@
 #include "u_ether.c"
 #include "u_qc_ether.c"
 #include "f_hid.c"
-#include "f_hid.h"
-#include "f_hid_android_keyboard.c"
-#include "f_hid_android_mouse.c"
 #ifdef CONFIG_TARGET_CORE
 #endif
 #ifdef CONFIG_SND_PCM
@@ -2917,41 +2914,6 @@ static struct android_usb_function midi_function = {
 };
 #endif
 
-static int hid_function_init(struct android_usb_function *f, struct usb_composite_dev *cdev)
- {
- 	return ghid_setup(cdev->gadget, 2);
- }
- 
- static void hid_function_cleanup(struct android_usb_function *f)
- {
- 	ghid_cleanup();
- }
- 
- static int hid_function_bind_config(struct android_usb_function *f, struct usb_configuration *c)
- {
- 	int ret;
- 	printk(KERN_INFO "hid keyboard\n");
- 	ret = hidg_bind_config(c, &ghid_device_android_keyboard, 0);
- 	if (ret) {
- 		pr_info("%s: hid_function_bind_config keyboard failed: %d\n", __func__, ret);
- 		return ret;
- 	}
- 	printk(KERN_INFO "hid mouse\n");
- 	ret = hidg_bind_config(c, &ghid_device_android_mouse, 1);
- 	if (ret) {
- 		pr_info("%s: hid_function_bind_config mouse failed: %d\n", __func__, ret);
- 		return ret;
- 	}
- 	return 0;
- }
- 
- static struct android_usb_function hid_function = {
- 	.name		= "hid_usb",
- 	.init		= hid_function_init,
- 	.cleanup	= hid_function_cleanup,
- 	.bind_config	= hid_function_bind_config,
- };
- 
 static int usbnet_function_init(struct android_usb_function *f,
 				struct usb_composite_dev *cdev)
 {
@@ -3335,9 +3297,6 @@ functions_show(struct device *pdev, struct device_attribute *attr, char *buf)
 	return buff - buf;
 }
 
-static int hid_enabled = 0;
-module_param_named(usb_keyboard, hid_enabled, uint, 0664);
-
 static ssize_t
 functions_store(struct device *pdev, struct device_attribute *attr,
 			       const char *buff, size_t size)
@@ -3429,10 +3388,6 @@ functions_store(struct device *pdev, struct device_attribute *attr,
 							name, err);
 		}
 	}
-           
-    /* HID driver enabled only when needed. */
-    if (hid_enabled)
- 	android_enable_function(dev, conf, "hid_usb");
 
 	/* Free uneeded configurations if exists */
 	while (curr_conf->next != &dev->configs) {
