@@ -3,6 +3,8 @@
 # Android Kernel Build Script by sagar846 @xda-developers
 #
 # v1 : Initial release.
+#
+# v2 : Incorporate lazy flasher stuff + other modifications
 
 clear
 
@@ -20,8 +22,9 @@ export CROSS_COMPILE=~/Kernel-Stuff/UBERTC-arm-eabi-4.9/bin/arm-eabi-
 
 #Paths
 
-KERNEL_DIR="$(HOME)/kernel_athene"
+KERNEL_DIR="${HOME}/kernel_athene"
 ZIMAGE_DIR="$KERNEL_DIR/arch/arm/boot"
+LAZYFLASHER_DIR="${HOME}/Kernel-Stuff/lazyflasher"
 
 #Functions
 
@@ -42,7 +45,8 @@ case "$cchoice" in
 	y|Y)
 		echo
 		clean_all
-		echo "All Cleaned up"
+		echo "Cleansed your kernel's soul"
+		echo
 		break
 		;;
 	n|N)
@@ -59,7 +63,7 @@ case "$cchoice" in
 esac
 done
 
-
+echo
 echo "You are building Enigma kernel for $DEVICE";
 echo
 
@@ -67,9 +71,9 @@ while read -p "Do you want to build the kernel (y/N)? " dchoice
 do
 case "$dchoice" in
 	y|Y)
-		DATE_START=$(date+"%s")
+		DATE_START=$(date +"%s")
 		make_kernel
-		if [ -f $ZIMAGE_DIR/$KERNEL];
+		if [ -f $ZIMAGE_DIR/$KERNEL ];
 		then
 			echo
 			echo "Kernel Build was Successful"
@@ -100,4 +104,45 @@ DATE_END=$(date +"%s")
 DIFF=$(($DATE_END - $DATE_START))
 echo "Time: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
 echo
+
+echo "Moving all necessary files to lazyflasher directory..."
+echo
+
+if [ -f $LAZYFLASHER_DIR/$KERNEL ];
+then
+	echo "Removing existing zImage in lazyflasher directory....done"
+	echo
+	rm $LAZYFLASHER_DIR/$KERNEL
+	echo "Copying new zImage to lazyflasher directory"
+	cp $ZIMAGE_DIR/$KERNEL $LAZYFLASHER_DIR
+	echo "Finished"
+	echo
+else
+	echo
+	echo "Copying new zImage to lazyflasher directory"
+	cp $ZIMAGE_DIR/$KERNEL $LAZYFLASHER_DIR
+	echo "Finished"
+	echo
+fi
+
+echo "Creating flashable zip file using lazy flasher"
+echo
+
+if [ -f $LAZYFLASHER_DIR/$KERNEL ];
+then
+	cd $LAZYFLASHER_DIR
+	make
+	echo
+	echo "########################################"
+	echo "###### Script Execution Completed ######"
+	echo "########################################"
+	echo
+else
+	echo
+	echo "Error: could not create zip file."
+	echo "zImage does not exist in lazyflasher root directory"
+	echo "Fix compile errors and rerun script to compile the kernel again"
+	echo "Aborting script"
+	echo
+fi
 
