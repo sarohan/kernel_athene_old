@@ -168,17 +168,8 @@ extern unsigned long nr_iowait(void);
 extern unsigned long nr_iowait_cpu(int cpu);
 extern unsigned long this_cpu_load(void);
 
-<<<<<<< HEAD
 extern void sched_update_nr_prod(int cpu, long delta, bool inc);
 extern void sched_get_nr_running_avg(int *avg, int *iowait_avg, int *big_avg);
-=======
-#if defined(CONFIG_MSM_DCVS)
-extern void sched_update_nr_prod(int cpu, unsigned long nr, bool inc);
-extern void sched_get_nr_running_avg(int *avg, int *iowait_avg);
-#endif
-extern unsigned long get_avg_nr_running(unsigned int cpu);
-extern unsigned long avg_nr_running(void);
->>>>>>> c985934f15d... [1/2] find7: cpuquiet: initial bringup
 
 extern void calc_global_load(unsigned long ticks);
 extern void update_cpu_load_nohz(void);

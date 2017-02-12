@@ -186,14 +186,10 @@ source "drivers/bif/Kconfig"
 
 source "drivers/sensors/Kconfig"
 
-<<<<<<< HEAD
 source "drivers/phy/Kconfig"
 
 source "drivers/soc/Kconfig"
 
 source "drivers/firmware/Kconfig"
-=======
-source "drivers/cpuquiet/Kconfig"
->>>>>>> c985934f15d... [1/2] find7: cpuquiet: initial bringup
 
 endmenu
