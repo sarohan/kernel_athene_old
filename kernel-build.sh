@@ -10,7 +10,7 @@
 
 clear
 
-#Resources
+#Resources- DON'T CHANGE THIS
 THREAD="-j4"
 DEVICE="athene"
 DEVICE_NAME="Moto G4 Plus"
@@ -18,15 +18,19 @@ DEFCONFIG="enigma_defconfig"
 KERNEL="zImage"
 FLASHABLE_ZIP="*.zip"
 
-# Kernel Details
+# Kernel Build Details
 export ARCH=arm
+# Give the complete path to your toolchain like so
 export CROSS_COMPILE=~/Kernel-Stuff/UBERTC-arm-eabi-4.9/bin/arm-eabi-
 
-#Paths
+#Paths - Very Important that you give the right paths
 KERNEL_DIR="${HOME}/kernel_athene"
 ZIMAGE_DIR="$KERNEL_DIR/arch/arm/boot"
 LAZYFLASHER_DIR="${HOME}/Kernel-Stuff/lazyflasher"
 KERNEL_OUT_DIR="${HOME}/Kernels/out"
+
+######################## No touchy stuff ########################
+############## Unless you know what you're doing ################
 
 #Functions
 function clean_out {
@@ -135,6 +139,8 @@ case "$dchoice" in
 			echo
 			echo "Kernel Build failed"
 			echo "Try building kernel without this script and see what went wrong."
+			echo "Exiting script"
+			exit
 			echo
 		fi
 		break
@@ -204,6 +210,7 @@ else
 	echo "zImage does not exist in lazyflasher root directory"
 	echo "Fix compile errors and rerun script to compile the kernel again"
 	echo "Aborting script"
+	exit
 	echo
 fi
 
