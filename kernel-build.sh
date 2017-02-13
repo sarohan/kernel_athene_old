@@ -100,11 +100,6 @@ case "$dchoice" in
 esac
 done
 
-DATE_END=$(date +"%s")
-DIFF=$(($DATE_END - $DATE_START))
-echo "Time: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
-echo
-
 echo "Moving all necessary files to lazyflasher directory..."
 echo
 
@@ -132,6 +127,9 @@ if [ -f $LAZYFLASHER_DIR/$KERNEL ];
 then
 	cd $LAZYFLASHER_DIR
 	make
+	DATE_END=$(date +"%s")
+	DIFF=$(($DATE_END - $DATE_START))
+	echo "Total Time: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
 	echo
 	echo "########################################"
 	echo "###### Script Execution Completed ######"
