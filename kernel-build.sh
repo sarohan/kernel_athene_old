@@ -11,7 +11,7 @@
 clear
 
 #Resources- DON'T CHANGE THIS
-THREAD="-j4"
+THREAD="-j6"
 DEVICE="athene"
 DEVICE_NAME="Moto G4 Plus"
 DEFCONFIG="enigma_defconfig"
@@ -26,24 +26,27 @@ export CROSS_COMPILE=~/Kernel-Stuff/UBERTC-arm-eabi-4.9/bin/arm-eabi-
 #Paths - Very Important that you give the right paths
 KERNEL_DIR="${HOME}/kernel_athene"
 ZIMAGE_DIR="$KERNEL_DIR/arch/arm/boot"
-LAZYFLASHER_DIR="${HOME}/Kernel-Stuff/lazyflasher"
-KERNEL_OUT_DIR="${HOME}/Kernels/out"
+LAZYFLASHER_DIR="${HOME}/kernel_athene/lazyflasher"
+KERNEL_OUT_DIR="${HOME}/kernel_athene/out"
 
 ######################## No touchy stuff ########################
 ############## Unless you know what you're doing ################
 
 #Functions
 function clean_out {
-	rm $KERNEL_OUT_DIR/*.zip
-	rm $KERNEL_OUT_DIR/*.sha1
+	cd $KERNEL_OUT_DIR
+	echo
+	make clean
 }
 
 function clean_all {
+	cd $KERNEL_DIR
 	echo
 	make clean
 }
 
 function make_kernel {
+	cd $KERNEL_DIR
 	echo
 	make $DEFCONFIG
 	make $THREAD
