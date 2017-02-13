@@ -1,32 +1,38 @@
 #!/bin/bash
 #
-# Android Kernel Build Script by sagar846 @xda-developers
+# Android Kernel Build Script for Enigma Kernel by sagar846 @xda-developers
 #
 # v1 : Initial release.
 #
 # v2 : Incorporate lazy flasher stuff + other modifications
+#
+# v3 : Some changes here and there + new stuff
 
 clear
 
 #Resources
-
 THREAD="-j4"
 DEVICE="athene"
+DEVICE_NAME="Moto G4 Plus"
 DEFCONFIG="enigma_defconfig"
 KERNEL="zImage"
+FLASHABLE_ZIP="*.zip"
 
 # Kernel Details
-
 export ARCH=arm
 export CROSS_COMPILE=~/Kernel-Stuff/UBERTC-arm-eabi-4.9/bin/arm-eabi-
 
 #Paths
-
 KERNEL_DIR="${HOME}/kernel_athene"
 ZIMAGE_DIR="$KERNEL_DIR/arch/arm/boot"
 LAZYFLASHER_DIR="${HOME}/Kernel-Stuff/lazyflasher"
+KERNEL_OUT_DIR="${HOME}/Kernels/out"
 
 #Functions
+function clean_out {
+	rm $KERNEL_OUT_DIR/*.zip
+	rm $KERNEL_OUT_DIR/*.sha1
+}
 
 function clean_all {
 	echo
@@ -38,6 +44,52 @@ function make_kernel {
 	make $DEFCONFIG
 	make $THREAD
 }
+
+while read -p "Executing Kernel Build Script. Continue (y/N)? " achoice
+do
+case "$achoice" in
+	y|Y)
+		echo
+		echo
+		break
+		;;
+	n|N)
+		echo
+		echo "Exiting build script"
+		echo
+		exit
+		;;
+	* )
+		echo
+		echo "Invalid Input try again!"
+		echo
+		;;
+esac
+done
+
+while read -p "Do you want to clean out directory (y/N)? " bchoice
+do
+case "$bchoice" in
+	y|Y)
+		echo
+		clean_out
+		echo "Out directory cleaned."
+		echo
+		break
+		;;
+	n|N)
+		echo 
+		echo "Out directory has not been touched"
+		echo
+		break
+		;;
+	* )
+		echo
+		echo "Invalid input try again!"
+		echo
+		;;
+esac
+done
 
 while read -p "Do you want to perform a clean build (y/N)? " cchoice
 do
@@ -64,7 +116,7 @@ esac
 done
 
 echo
-echo "You are building Enigma kernel for $DEVICE";
+echo "You are building Enigma kernel for $DEVICE_NAME ($DEVICE)";
 echo
 
 while read -p "Do you want to build the kernel (y/N)? " dchoice
@@ -88,9 +140,9 @@ case "$dchoice" in
 		break
 		;;
 	n|N)
-		DATE_START=$(date +"%s")
+		echo "Exiting build script"
 		echo
-		break
+		exit
 		;;
 	* )
 		echo
@@ -115,11 +167,29 @@ then
 else
 	echo
 	echo "Copying new zImage to lazyflasher directory"
+	echo "Note: this is done only if there is no zImage already present"
 	cp $ZIMAGE_DIR/$KERNEL $LAZYFLASHER_DIR
 	echo "Finished"
 	echo
 fi
 
+echo "Removing flashable zip in lazyflasher directory if present"
+echo "Dont worry about any errors here"
+echo
+
+VARIABLE= $($LAZYFLASHER_DIR/$FLASHABLE_ZIP)
+if [ -f $VARIABLE ];
+then
+	rm $LAZYFLASHER_DIR/*.zip
+	rm $LAZYFLASHER_DIR/*.sha1
+	echo "Finished"
+	echo
+else
+	echo "$LAZYFLASHER_DIR is clean."
+	echo "Nothing to do"
+	echo
+fi
+	
 echo "Creating flashable zip file using lazy flasher"
 echo
 
@@ -127,13 +197,6 @@ if [ -f $LAZYFLASHER_DIR/$KERNEL ];
 then
 	cd $LAZYFLASHER_DIR
 	make
-	DATE_END=$(date +"%s")
-	DIFF=$(($DATE_END - $DATE_START))
-	echo "Total Time: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
-	echo
-	echo "########################################"
-	echo "###### Script Execution Completed ######"
-	echo "########################################"
 	echo
 else
 	echo
@@ -143,4 +206,25 @@ else
 	echo "Aborting script"
 	echo
 fi
+
+echo "Moving newly created flashable zip to out directory"
+echo
+
+if [ -f $VARIABLE ];
+then
+	cd $LAZYFLASHER_DIR
+	mv *.zip $KERNEL_OUT_DIR
+	mv *.sha1 $KERNEL_OUT_DIR
+	echo "Finished"
+	echo
+else
+	echo "Error no zip file found"
+	echo "Check manually"
+	echo
+fi
+
+DATE_END=$(date +"%s")
+DIFF=$(($DATE_END - $DATE_START))
+echo "Total Time: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
+echo
 
