@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 # Android Kernel Build Script for Enigma Kernel by sagar846 @xda-developers
+# Can be modified for other devices easily.
 #
 # v1 : Initial release.
 #
@@ -10,7 +11,7 @@
 
 clear
 
-#Resources- DON'T CHANGE THIS
+#Resources- Change according to your device
 THREAD="-j6"
 DEVICE="athene"
 DEVICE_NAME="Moto G4 Plus"
@@ -161,6 +162,11 @@ case "$dchoice" in
 esac
 done
 
+# If you want to use anykernel instead of lazyflasher then you will
+# have to change everything from here onwards with proper commands. 
+
+# Lazyflasher stuff begins here
+
 echo "Moving all necessary files to lazyflasher directory..."
 echo
 
@@ -233,6 +239,9 @@ else
 	echo
 fi
 
+# Lazyflasher stuff ends here
+
+# You can remove this if you want but it's good knowing how long the entire process takes.
 DATE_END=$(date +"%s")
 DIFF=$(($DATE_END - $DATE_START))
 echo "Total Time: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
