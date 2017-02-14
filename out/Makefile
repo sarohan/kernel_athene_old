@@ -1,6 +1,5 @@
 Name ?= enigma
 
 clean:
-	@rm *.zip
-	@rm *.sha1
+	@rm -f *.zip
 	@echo "Done."
