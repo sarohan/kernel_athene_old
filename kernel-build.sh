@@ -8,10 +8,17 @@
 # v2 : Incorporate lazy flasher stuff + other modifications
 #
 # v3 : Some changes here and there + new stuff
+#
+# v4 : implement signing zip + some changes
 
 clear
 
 #Resources- Change according to your device
+NAME="enigma"
+KERNEL="kernel"
+VERSION="rX"
+DEVICE="athene"
+ZIP="$NAME-$KERNEL-$DEVICE-$VERSION"
 THREAD="-j6"
 DEVICE="athene"
 DEVICE_NAME="Moto G4 Plus"
@@ -29,6 +36,7 @@ KERNEL_DIR="${HOME}/kernel_athene"
 ZIMAGE_DIR="$KERNEL_DIR/arch/arm/boot"
 LAZYFLASHER_DIR="${HOME}/kernel_athene/lazyflasher"
 KERNEL_OUT_DIR="${HOME}/kernel_athene/out"
+SIGN_ZIP_DIR="${HOME}/kernel_athene/signzip"
 
 ######################## No touchy stuff ########################
 ############## Unless you know what you're doing ################
@@ -38,6 +46,8 @@ function clean_out {
 	cd $KERNEL_OUT_DIR
 	echo
 	make clean
+	cd $SIGN_ZIP_DIR
+	rm -f *.zip
 }
 
 function clean_all {
@@ -53,11 +63,17 @@ function make_kernel {
 	make $THREAD
 }
 
+function sign_zip {
+	mv $LAZYFLASHER_DIR/$FLASHABLE_ZIP $SIGN_ZIP_DIR
+	cd $SIGN_ZIP_DIR
+	echo
+	java -jar signapk.jar testkey.x509.pem testkey.pk8 "$ZIP".zip "$ZIP-signed".zip
+}
+
 while read -p "Executing Kernel Build Script. Continue (y/N)? " achoice
 do
 case "$achoice" in
 	y|Y)
-		echo
 		echo
 		break
 		;;
@@ -79,7 +95,6 @@ while read -p "Do you want to clean out directory (y/N)? " bchoice
 do
 case "$bchoice" in
 	y|Y)
-		echo
 		clean_out
 		echo "Out directory cleaned."
 		echo
@@ -123,7 +138,6 @@ case "$cchoice" in
 esac
 done
 
-echo
 echo "You are building Enigma kernel for $DEVICE_NAME ($DEVICE)";
 echo
 
@@ -165,8 +179,6 @@ done
 # If you want to use anykernel instead of lazyflasher then you will
 # have to change everything from here onwards with proper commands. 
 
-# Lazyflasher stuff begins here
-
 echo "Moving all necessary files to lazyflasher directory..."
 echo
 
@@ -192,11 +204,11 @@ echo "Removing flashable zip in lazyflasher directory if present"
 echo "Dont worry about any errors here"
 echo
 
-VARIABLE= $($LAZYFLASHER_DIR/$FLASHABLE_ZIP)
-if [ -f $VARIABLE ];
+cd $LAZYFLASHER_DIR
+if [[ -f $FLASHABLE_ZIP ]];
 then
-	rm $LAZYFLASHER_DIR/*.zip
-	rm $LAZYFLASHER_DIR/*.sha1
+	rm -f $LAZYFLASHER_DIR/*.zip
+	rm -f $LAZYFLASHER_DIR/*.sha1
 	echo "Finished"
 	echo
 else
@@ -223,27 +235,29 @@ else
 	echo
 fi
 
-echo "Moving newly created flashable zip to out directory"
-echo
-
-if [ -f $VARIABLE ];
-then
-	cd $LAZYFLASHER_DIR
-	mv *.zip $KERNEL_OUT_DIR
-	mv *.sha1 $KERNEL_OUT_DIR
-	echo "Finished"
-	echo
-else
-	echo "Error no zip file found"
-	echo "Check manually"
-	echo
-fi
-
-# Lazyflasher stuff ends here
-
 # You can remove this if you want but it's good knowing how long the entire process takes.
 DATE_END=$(date +"%s")
 DIFF=$(($DATE_END - $DATE_START))
 echo "Total Time: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
+echo
+
+echo "Signing the newly generated zip file.."
+sign_zip
+echo "Finished"
+echo
+
+echo "Moving newly signed flashable zip to out directory"
+mv $SIGN_ZIP_DIR/$FLASHABLE_ZIP $KERNEL_OUT_DIR
+echo
+echo "Finished"
+echo 
+
+cd $KERNEL_OUT_DIR
+if [ -f "$ZIP-signed".zip ];
+then
+	rm "$ZIP".zip
+fi
+
+echo "###### Script Execution Completed ######"
 echo
 
