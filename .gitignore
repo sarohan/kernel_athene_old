@@ -89,11 +89,5 @@ GTAGS
 #
 extra_certificates
 signing_key.priv
-
-lazyflasher/zImage
-lazyflasher/*.zip
-lazyflasher/*.sha1
-out/*.zip
-out/*.sha1
 signing_key.x509
 x509.genkey
