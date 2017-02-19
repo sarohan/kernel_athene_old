@@ -11,9 +11,12 @@
 #
 # v4 : implement signing zip + some changes
 
+# Just a side not : even if your kernel build fails and you don't make a clean build
+# The zip file will still be created nonetheless
+
 clear
 
-#Resources- Change according to your device
+#Resources- Change according to your device and needs
 NAME="enigma"
 KERNEL="kernel"
 VERSION="rX"
@@ -29,11 +32,12 @@ FLASHABLE_ZIP="*.zip"
 # Kernel Build Details
 export ARCH=arm
 # Give the complete path to your toolchain like so
-export CROSS_COMPILE=~/Kernel-Stuff/UBERTC-arm-eabi-4.9/bin/arm-eabi-
+# ~/folder-containing-toolchain/name-of-toolchain-folder/bin/arm-eabi-
+export CROSS_COMPILE=~/toolchains/UBERTC-arm-eabi-4.9/bin/arm-eabi-
 
 #Paths - Very Important that you give the right paths
 KERNEL_DIR="${HOME}/kernel_athene"
-ZIMAGE_DIR="$KERNEL_DIR/arch/arm/boot"
+ZIMAGE_DIR="$KERNEL_DIR/arch/arm/boot" #Dont change this
 LAZYFLASHER_DIR="${HOME}/kernel_athene/lazyflasher"
 KERNEL_OUT_DIR="${HOME}/kernel_athene/out"
 SIGN_ZIP_DIR="${HOME}/kernel_athene/signzip"
@@ -69,6 +73,8 @@ function sign_zip {
 	echo
 	java -jar signapk.jar testkey.x509.pem testkey.pk8 "$ZIP".zip "$ZIP-signed".zip
 }
+
+# The action starts here
 
 while read -p "Executing Kernel Build Script. Continue (y/N)? " achoice
 do
